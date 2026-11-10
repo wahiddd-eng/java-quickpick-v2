@@ -48,11 +48,11 @@ export async function createCheckout(ctx: AppContext, userId: string, orderId: s
     });
     if (!payment) {
       [payment] = await tx.q.query(
-        `INSERT INTO payments (order_id, provider, provider_ref, amount_paise, currency, status, idempotency_key) VALUES ($1,$2,$3,$4,'INR','INITIATED',$5) RETURNING *`,
-        [orderId, ctx.provider.name, session.providerRef, Number(order.total_paise), `checkout:${orderId}`],
+        `INSERT INTO payments (order_id, provider, provider_ref, amount_paise, currency, status, idempotency_key, created_at, updated_at) VALUES ($1,$2,$3,$4,'INR','INITIATED',$5,$6,$6) RETURNING *`,
+        [orderId, ctx.provider.name, session.providerRef, Number(order.total_paise), `checkout:${orderId}`, ctx.now()],
       );
     } else {
-      await tx.q.query(`UPDATE payments SET status='INITIATED', updated_at=now() WHERE id=$1`, [payment.id]);
+      await tx.q.query(`UPDATE payments SET status='INITIATED', updated_at=$2 WHERE id=$1`, [payment.id, ctx.now()]);
     }
     await tx.q.query(`UPDATE payment_attempts SET status='ABANDONED', updated_at=now() WHERE payment_id=$1 AND status='CREATED'`, [payment.id]);
     await tx.q.query(
@@ -198,7 +198,7 @@ export async function reconcilePayments(ctx: AppContext, opts: { olderThanSecond
   const cutoff = new Date(ctx.now().getTime() - (opts.olderThanSeconds ?? 60) * 1000);
   const open = await ctx.db.query(
     `SELECT p.*, o.status AS order_status FROM payments p JOIN orders o ON o.id=p.order_id
-      WHERE p.status IN ('INITIATED','PENDING') AND p.updated_at < $1 AND p.created_at > $2`,
+      WHERE p.status IN ('INITIATED','PENDING') AND p.updated_at < $1 AND p.updated_at > $2`,
     [cutoff, new Date(ctx.now().getTime() - 48 * 3600_000)],
   );
   let fixed = 0;

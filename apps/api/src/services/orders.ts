@@ -139,8 +139,8 @@ export async function createOrder(ctx: AppContext, user: { id: string }, input: 
       const estimatedReadyAt = quote.estimate ? new Date(now.getTime() + quote.estimate.minutes * 60_000) : null;
       const rows = await tx.q.query(
         `INSERT INTO orders (order_number, order_source, user_id, shop_id, slot_id, subtotal_paise, fee_rate_bps, fee_paise, tax_mode, tax_rate_bps,
-           tax_paise, total_paise, pricing_policy_id, pricing_policy_version, idempotency_key, expires_at, estimated_ready_at)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17) RETURNING id`,
+           tax_paise, total_paise, pricing_policy_id, pricing_policy_version, idempotency_key, expires_at, estimated_ready_at, created_at, updated_at)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$18) RETURNING id`,
         [
           orderNumber,
           input.source,
@@ -159,6 +159,7 @@ export async function createOrder(ctx: AppContext, user: { id: string }, input: 
           idempotencyKey,
           new Date(now.getTime() + ctx.config.checkoutTtlSeconds * 1000),
           estimatedReadyAt,
+          now,
         ],
       );
       const orderId: string = rows[0].id;

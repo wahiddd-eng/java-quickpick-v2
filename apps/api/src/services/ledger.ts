@@ -58,9 +58,9 @@ export async function initiateRefund(
     reason: input.reason,
   });
   const inserted = await tx.q.query(
-    `INSERT INTO refunds (payment_id, order_id, amount_paise, reason, status, provider_ref, idempotency_key)
-     VALUES ($1,$2,$3,$4,'PENDING',$5,$6) RETURNING *`,
-    [payment.id, input.orderId, amount, input.reason, provider.providerRef, input.idempotencyKey],
+    `INSERT INTO refunds (payment_id, order_id, amount_paise, reason, status, provider_ref, idempotency_key, created_at)
+     VALUES ($1,$2,$3,$4,'PENDING',$5,$6,$7) RETURNING *`,
+    [payment.id, input.orderId, amount, input.reason, provider.providerRef, input.idempotencyKey, ctx.now()],
   );
   await tx.q.query(`UPDATE payments SET status='REFUND_PENDING', updated_at=now() WHERE id=$1`, [payment.id]);
   await tx.q.query(`UPDATE orders SET payment_status='REFUND_PENDING', updated_at=now() WHERE id=$1`, [input.orderId]);
