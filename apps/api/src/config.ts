@@ -92,7 +92,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     nodeEnv,
     port: parsed.PORT,
     databaseUrl: env.DATABASE_URL || undefined,
-    pgliteDataDir: env.PGLITE_DATA_DIR || '.data/pglite-v2',
+    // Relative paths resolve from the repo root (not the API's working directory), so the dev DB is always <repo>/.data/pglite-v2.
+    pgliteDataDir: path.resolve(here, '../../..', env.PGLITE_DATA_DIR || '.data/pglite-v2'),
     jwtSecret: secretOrRandom(env.JWT_SECRET),
     mockWebhookSecret: secretOrRandom(env.MOCK_WEBHOOK_SECRET),
     pickupOtpSecret: otpSecret,

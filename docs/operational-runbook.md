@@ -1,42 +1,39 @@
-# Operational runbook — vendor tablets and lunch rush
+# Operations runbook (pilot)
 
-## Tablet setup (each loaned tablet)
+## Setting up a shop
 
-1. Register it in **Admin → Tablets** with its asset tag (e.g. `JQ-TAB-003`) and model, then assign it to the shop. The handover date is recorded; tablets remain QuickPick property.
-2. On the tablet: open the vendor app URL in Chrome → menu → **Add to Home screen**. Launch from the icon (full screen).
-3. Sign in with the shop's vendor login. Tap **Turn on sound** once per session (browsers block sound until a tap) and test the volume at counter noise level.
-4. Android settings: screen timeout → never/30 min while plugged in; battery optimisation **off** for Chrome; notifications/sound on; Do Not Disturb off; keep it on the charger.
-5. Optional kiosk: Android *App pinning* (Settings → Security → App pinning) to keep staff in the app.
-6. Admin → Tablets should show it **online** within 30 s (heartbeat).
+1. Admin → **Vendors**: add the business that will be paid (payout set-up stays "Not started" until the payment provider onboards it).
+2. Admin → **Shops & QR codes** → *Onboard a shop*: code (e.g. JG03), name, food categories, hours, pickup capacity per slot, average minutes per order and how many orders the kitchen makes at once (these drive the walk-in estimate), link the vendor. The shop starts as a draft.
+3. Admin → **Menus**: categories, items with veg/egg/non-veg marks, options (add-ons and choices).
+4. Admin → **Vendors** → *Shop logins*: create the tablet login.
+5. Admin → Shops → **QR code** → **Print poster**. Laminate it and fix it at the counter at eye level. The code printed under the QR can be typed in if a phone can't scan.
+6. **Activate** the shop.
 
-## Daily opening checklist (before lunch)
+## Tablet and printer
 
-- Tablet charged, on Wi-Fi, app open, header shows **Live** and the **Taking orders** switch is on.
-- Menu availability updated (sold-out items switched off).
-- Capacity per slot matches today's staff (Admin → Shops). Start low; raise only from measured throughput.
+- Install the QuickPick Shop Android app (see `apps/vendor-app/README.md`), sign in with the shop login. The tablet registers itself; give it its asset tag in admin → Tablets.
+- Pair the printer in Android Bluetooth settings (or put it on the shop Wi-Fi with a fixed IP), then in the app **Printer** tab choose it and tap **Test print**.
+- Keep the tablet on charge, screen timeout off, sound on. Paper rolls: 80 mm thermal; keep two spares.
 
-## During service
+## Daily checks (QuickPick staff)
 
-- New orders appear in the amber **New** column with a countdown bar. Tap the minutes to prepare, then **Accept**, or **Reject** and pick a reason. Unanswered orders auto-cancel with a full refund.
-- Too busy? Turn off the **Taking orders** switch. Orders already placed still need finishing.
-- Handover: tap **Hand over**, enter the student's 4-digit code on the keypad, tap **Confirm handover**. A wrong code is refused. Student never came → **No-show**.
-- Can't fulfil an accepted order → **Can't make this order**, then **Cancel and refund**.
+- Admin → **Printers**: every shop ONLINE, nothing failed or stale.
+- Admin → **Tablets**: every tablet online during opening hours.
+- Admin → **Reconciliation**: no OPEN records (an open REFUND record means a student is waiting for money — retry it from Payments & refunds).
+- Admin → **Audit log** → *Handovers without a collection code*: review overrides.
 
 ## When things go wrong
 
-| Symptom | What to do |
-|---|---|
-| Header says **Reconnecting** or **Offline** | Check Wi-Fi. The board keeps refreshing every 8 s and reloads fully on reconnect; no order is lost because orders live in the database. |
-| Wi-Fi down for minutes | Switch the tablet to a phone hotspot. If none, pause orders from the admin console (Admin → Shops) so students stop ordering. |
-| No sound | Tap **Sound off/on** in the top bar (it plays a test beep); check volume / DND; reload the app. |
-| Tablet dead or lost | Sign in on any phone/laptop with the vendor login — same board. Mark the tablet returned/reassigned in Admin → Tablets. |
-| Student says they paid, order missing | Admin → Payments: find the order. Only webhook-confirmed payments count; if a payment exists without a live order, it was auto-refunded (see order timeline). |
-| Wrong item / complaint | Admin → Support, then Orders → Details → partial or full refund with a reason (audited). |
+| Problem | What the shop sees | What to do |
+|---|---|---|
+| Printer off / paper out | Red "slips didn’t print" banner; order stays on the board | Fix the printer, Printer tab → **Retry**. Slips that were retried print "RETRY — CHECK FOR DUPLICATE" |
+| Slip lost or messy | — | On the order card tap **Reprint slip** (prints "REPRINT — DO NOT COOK AGAIN") |
+| Tablet restarted mid-print | Slip prints again after ~45 s marked as a retry | Check it isn’t cooked twice |
+| Internet down | "No internet" banner | Switch to a phone hotspot; nothing is lost — orders and slips are on the server |
+| Student’s phone dead / code locked or expired | Handover sheet offers **manual handover** | Check college ID and the order number, record the reason |
+| Can’t make an accepted order | **Can’t make this order** on the card | Student is refunded in full automatically |
+| Shop too busy | **Taking orders** switch in the header | New orders stop; existing ones still need finishing |
 
-## End of day
+## Data and privacy
 
-Admin → Overview → **Export today's orders (CSV)**. Check Payments & refunds → Reconciliation shows "matches" for every paid order.
-
-## Hard rule
-
-This build is sandbox only. Do not connect a real payment provider until FSSAI, CA (GST), provider marketplace agreement and SRM/Java permissions are all in writing.
+Shops see a student's first name only — never email, phone or the collection code. Kitchen slips contain no OTP, contact details or prices.

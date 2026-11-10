@@ -1,15 +1,18 @@
-# Implementation plan
+# Implementation roadmap
 
-Scope follows the project brief (Section 23): a working **sandbox** MVP — pickup only, single-shop orders, lunch first, PWA, mock payments.
-
-| Phase | Content | Status |
+| # | Milestone | Status |
 |---|---|---|
-| 0. Foundations | npm workspaces, TypeScript, lint, shared money/fee maths, state machine, env template, sandbox guard | ✅ |
-| 1. Data & API core | Postgres schema + migrations, PGlite for dev/tests, auth (OTP + staff password, JWT), RBAC, shops/menu, slots with atomic capacity, idempotent order creation, audit log | ✅ |
-| 2. Payments (mock) | Provider-neutral interface, mock provider, signed + de-duplicated webhooks, amount check, expiry sweeper, late-success refund, planned splits, refunds (full/partial, idempotent), reconciliation | ✅ |
-| 3. Vendor ops | Order board, accept timer, reject/cancel with refund, status flow, pickup-code handover, pause, menu availability, heartbeat, Socket.IO signals + REST polling | ✅ |
-| 4. Student PWA | OTP login, shops, menu, one-shop cart, slots, server quote with fee breakdown, sandbox pay, tracker, pickup code, history, cancel, support | ✅ |
-| 5. Admin console | Metrics, CSV export, orders/timeline/refunds, shops, menus, vendors, tablets, versioned pricing (super-admin), payments, reconciliation, support, audit | ✅ |
-| 6. Tests & docs | 15 required test areas (34 tests), architecture, data model, API, runbook | ✅ |
-| 7. Pilot readiness (next) | Real OTP delivery, measured slot capacity with 2 committed shops, hosting + backups, monitoring/alerts, privacy notice & terms | ⏳ |
-| 8. Live payments (blocked on approvals) | Cashfree Easy Split or Razorpay Route adapter behind the same interface, provider webhook verification, settlement report import | ⛔ blocked |
+| 0 | Separate V2 repository, V1 untouched; docs | **Done** |
+| 1 | **Walk-in vertical slice**: QR → menu → cart → sandbox payment → vendor tablet → accept → kitchen slip → READY → push → OTP → COLLECTED | **Done in sandbox** (API tests + browser run; slip on the simulated printer; push via the sandbox log provider + in-app) |
+| 2 | **Pre-order**: shop list, slot choice and capacity, same tablet queue | **Done in sandbox** (API tests + browser run) |
+| 3 | Failure handling: invalid QR, suspended/closed/paused shop, unavailable items/options, full slots, failed/pending/duplicate/lost payments, rejections, refund failure, printer failures and duplicates, push failure, OTP invalid/expired/replay/lockout, tablet restart, concurrency | **Done** (automated API tests; printer failure also in the browser run) |
+| 4 | Admin: QR generation, printer health, analytics by mode and shop, peak hours, settlements, reconciliation | **Done (first version)** |
+| 5 | **Android build of the vendor app** on a real tablet; test the native printer plugin with a sample 80 mm printer; finalise printer model | Next — needs Android Studio + hardware |
+| 6 | **Firebase project**: web push for the student PWA (VAPID key, service worker), FCM service account on the API; device tests | Next — needs a Firebase project |
+| 7 | Pilot setup: real shop data, measured prep times and slot capacity, QR posters printed, tablets enrolled, managed Postgres, HTTPS domain, Sentry | After 5–6 |
+| 8 | Payment provider adapter (Cashfree Easy Split) against the provider sandbox; settlement import | Only after written provider/CA approval |
+| 9 | Real OTP delivery for student sign-in (email/SMS), privacy notice and terms; SMS fallback for READY (with consent) | Before pilot |
+
+## Order of work inside each milestone
+
+Working functionality first (API + tests), then the screens, then a browser run of the whole flow, then docs. Each milestone ends with a report: files created/modified, features, tests run, verified results, remaining defects, next milestone (see [PROGRESS.md](PROGRESS.md)).

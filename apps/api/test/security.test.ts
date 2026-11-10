@@ -121,6 +121,10 @@ describe('admin', () => {
     const token = regen.body.url.split('/s/')[1];
     expect((await e.api.get(`/api/v1/qr/${e.DEMO_QR.JG01}`)).status).toBe(404);
     expect((await e.api.get(`/api/v1/qr/${token}`)).body.shop.id).toBe(e.shop01.id);
+    // The code printed under the QR (grouped with dashes) also works when typed in.
+    expect(token).toMatch(/^[a-z0-9]{12}$/);
+    const typed = token.replace(/(.{4})(?=.)/g, '$1-').toUpperCase();
+    expect((await e.api.get(`/api/v1/qr/${typed}`)).body.shop.id).toBe(e.shop01.id);
   });
 
   it('edits shop hours: rebuilds unbooked slots, keeps booked ones, rejects impossible hours', async () => {

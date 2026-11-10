@@ -3,7 +3,7 @@ import tseslint from 'typescript-eslint';
 import globals from 'globals';
 
 export default tseslint.config(
-  { ignores: ['**/dist/**', '**/node_modules/**', '**/.data/**', '**/*.config.js', '**/*.config.ts'] },
+  { ignores: ['**/dist/**', '**/node_modules/**', '**/.data/**', '**/*.config.js', '**/*.config.ts', 'apps/vendor-app/android/**'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

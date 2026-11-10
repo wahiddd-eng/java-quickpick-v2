@@ -78,7 +78,8 @@ export function publicRoutes(ctx: AppContext): Router {
     asyncHandler(async (req, res) => {
       const token = z.string().min(4).max(64).regex(/^[A-Za-z0-9_-]+$/).safeParse(req.params.token);
       if (!token.success) throw new HttpError(404, 'QR_NOT_FOUND', 'This QR code is not a Java QuickPick shop code');
-      const [shop] = await ctx.db.query(`SELECT * FROM shops WHERE qr_token=$1`, [token.data]);
+      // Exact token first; a code typed from the poster may include the display dashes (abcd-efgh-jkmn).
+      const [shop] = await ctx.db.query(`SELECT * FROM shops WHERE qr_token=$1 OR qr_token=$2 ORDER BY (qr_token=$1) DESC LIMIT 1`, [token.data, token.data.replace(/-/g, '').toLowerCase()]);
       if (!shop || shop.status === 'DRAFT') throw new HttpError(404, 'QR_NOT_FOUND', 'This QR code is not a Java QuickPick shop code');
       const view = publicShopView(ctx, shop);
       const estimate = view.walkin.orderable ? await estimateWalkinMinutes(ctx, ctx.db, shop) : null;

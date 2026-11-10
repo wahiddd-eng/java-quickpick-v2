@@ -16,7 +16,7 @@ const children = procs.map(([label, script, color]) => {
   child.on('exit', (code) => console.log(`${color}[${label}]\x1b[0m exited (${code})`));
   return child;
 });
-console.log('\n  Student  http://localhost:5273\n  Vendor   http://localhost:5274\n  Admin    http://localhost:5275\n  API      http://localhost:4100\n');
+console.log('\n  Student  http://localhost:5273   (walk-in demo QR: /s/demo-jg01-qr7k)\n  Vendor   http://localhost:5274\n  Admin    http://localhost:5275\n  API      http://localhost:4100\n');
 const stop = () => { children.forEach((c) => c.kill('SIGTERM')); process.exit(0); };
 process.on('SIGINT', stop);
 process.on('SIGTERM', stop);
