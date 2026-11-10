@@ -1,0 +1,12 @@
+import '@fontsource-variable/instrument-sans';
+import '@qp2/shared/src/base.css';
+import './styles.css';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { App } from './App';
+
+createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+);

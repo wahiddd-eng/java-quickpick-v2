@@ -1,0 +1,9 @@
+{
+  "name": "Java QuickPick",
+  "short_name": "Java QuickPick",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0e6b4e",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
